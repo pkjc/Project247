@@ -1,3 +1,3 @@
 ## Authors
-Noah Giles
+Noah Giles  
 Zack Steffes
