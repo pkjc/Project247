@@ -1,4 +1,4 @@
 ## Authors
 Noah Giles  
 Zack Steffes
-Pankaj Chobharkar
+<p>Pankaj Chobharkar</p>
