@@ -11,7 +11,10 @@
     tools:context="project.cse247.chat.MainActivity">
 
     <TextView
+        android:text="TextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!" />
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/textView" />
 </RelativeLayout>
