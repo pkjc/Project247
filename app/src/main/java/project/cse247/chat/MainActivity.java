@@ -23,7 +23,8 @@ public class MainActivity extends AppCompatActivity {
     private BroadcastReceiver receiver;
     private IntentFilter filter;
 
-    public List<WifiP2pDevice> peers = new ArrayList<WifiP2pDevice>();
+    public List<WifiP2pDevice> peers = new ArrayList<>();
+
     public WifiP2pManager.PeerListListener peerListListener = new WifiP2pManager.PeerListListener() {
         @Override
         public void onPeersAvailable(WifiP2pDeviceList peerList) {
@@ -40,12 +41,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        message = (TextView) this.findViewById( R.id.textView);
+        message = (TextView) this.findViewById( R.id.text_view);
         message.setText("Detected Peers: \n");
 
         manager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
         channel = manager.initialize(this, getMainLooper(), null);
+
         receiver = new ChatReceiver(manager, channel, this);
+
         filter = new IntentFilter();
 
         filter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
