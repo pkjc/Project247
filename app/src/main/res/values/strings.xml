@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Chat</string>
+    <string name="discovered_peers_act_title">Nearby Peers</string>
+    <string name="prev_conversations_act_title">All Chats</string>
+    <string name="main_act_title">WiFiChat</string>
+    <string name="see_previous_chats">See Previous Chats</string>
+    <string name="start_nearby_peer_discovery">Start Nearby Peer Discovery</string>
+    <string name="welcome_to_wifichat">Welcome to WiFiChat</string>
 </resources>
