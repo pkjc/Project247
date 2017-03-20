@@ -140,17 +140,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume(){
         super.onResume();
         registerReceiver(receiver, filter);
-        manager.discoverPeers(channel, new WifiP2pManager.ActionListener() {
-            @Override
-            public void onSuccess() {
-
-            }
-
-            @Override
-            public void onFailure(int reason) {
-
-            }
-        });
     }
 
     /*
