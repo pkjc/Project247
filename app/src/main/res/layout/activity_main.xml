@@ -11,17 +11,22 @@
     tools:context="project.cse247.chat.MainActivity">
 
     <TextView
+        android:text="TextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
+        android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:id="@+id/text_view" />
+        android:layout_marginTop="64dp"
+        android:id="@+id/device_list" />
 
-    <ListView
-        android:layout_width="match_parent"
+    <Button
+        android:text="Connect!"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/peer_list"
-        >
-    </ListView>
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="72dp"
+        android:id="@+id/connect"
+        android:onClick="do_connect" />
 
 </RelativeLayout>
