@@ -8,6 +8,7 @@ import android.net.wifi.p2p.WifiP2pDeviceList;
 import android.net.wifi.p2p.WifiP2pManager;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -34,11 +35,14 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
         WifiP2pManager.PeerListListener myPeerListListener = new WifiP2pManager.PeerListListener() {
             @Override
             public void onPeersAvailable(WifiP2pDeviceList wifiP2pDeviceListProvider) {
-                List<String> discoveredPeersList = new ArrayList<>();
+                List<WifiP2pDevice> discoveredPeersList = new ArrayList<>();
+                Collection<WifiP2pDevice> refreshedPeers = wifiP2pDeviceListProvider.getDeviceList();
 
-                for (WifiP2pDevice wifiP2pDevice : wifiP2pDeviceListProvider.getDeviceList()) {
-                    discoveredPeersList.add(wifiP2pDevice.deviceName);
+                if (!refreshedPeers.equals(discoveredPeersList)) {
+                    discoveredPeersList.clear();
+                    discoveredPeersList.addAll(refreshedPeers);
                 }
+
                 discoveredPeersListActivity.populateDiscoveredPeersList(discoveredPeersList);
             }
         };

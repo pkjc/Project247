@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -57,8 +58,13 @@ public class DiscoveredPeersListActivity extends AppCompatActivity {
         });
     }
 
-    void populateDiscoveredPeersList(List discoveredPeersList){
-        ListAdapter discoveredPeersListAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,discoveredPeersList );
+    void populateDiscoveredPeersList(List<WifiP2pDevice> discoveredPeersList){
+        List<String> peerDeviceNameList = new ArrayList<>();
+
+        for(WifiP2pDevice peerDeviceName:discoveredPeersList){
+            peerDeviceNameList.add(peerDeviceName.deviceName);
+        }
+        ListAdapter discoveredPeersListAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,peerDeviceNameList);
         ListView discoveredPeersListView = (ListView) findViewById(R.id.discovered_peers_list);
         discoveredPeersListView.setAdapter(discoveredPeersListAdapter);
 
