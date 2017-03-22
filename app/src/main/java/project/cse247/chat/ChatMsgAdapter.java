@@ -2,6 +2,7 @@ package project.cse247.chat;
 
 import android.app.Activity;
 import android.content.Context;
+import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,7 +47,7 @@ public class ChatMsgAdapter extends ArrayAdapter<ChatMessage> {
 
         ChatMessage chatMsg = chatMsgdata[position];
         holder.msgText.setText(chatMsg.getMessageText());
-        holder.msgTime.setText(chatMsg.getMessageTime() + "");
+        holder.msgTime.setText(DateFormat.format("dd-mm-yyyy (HH:mm:ss)",chatMsg.getMessageTime()));
         holder.msgSender.setText(chatMsg.getMessageSender());
 
         return row;

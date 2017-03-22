@@ -3,7 +3,7 @@
 
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-
+    android:padding="12sp"
     >
 
     <TextView
@@ -11,31 +11,29 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="sender"
-        android:textSize="18sp"
-        android:layout_alignBaseline="@+id/msgTime"
-        android:layout_alignBottom="@+id/msgTime"
+        android:textSize="13sp"
+        android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:textAllCaps="true" />
 
     <TextView
         android:id="@+id/msgTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="time"
-        android:textSize="18sp"
+        android:textSize="13sp"
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="21dp" />
-
+        android:layout_alignParentEnd="true" />
 
     <TextView
         android:id="@+id/msgText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="27dp"
+        android:layout_marginTop="18dp"
         android:text="message text"
-        android:textSize="20sp"
+        android:textSize="18sp"
         android:layout_below="@+id/msgSender"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />

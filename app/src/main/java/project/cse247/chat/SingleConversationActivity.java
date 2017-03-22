@@ -16,9 +16,13 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class SingleConversationActivity extends AppCompatActivity {
 
     ListAdapter chatMsgAdapter;
+    List<ChatMessage> chatMsgArrayList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,10 +40,9 @@ public class SingleConversationActivity extends AppCompatActivity {
 
     void displayChatMsgs(ChatMessage chatMessage){
         ListView chatMsgs = (ListView) findViewById(R.id.msgList);
-        ChatMessage chatMsgArray[] = new ChatMessage[]{
-                chatMessage
-        };
-        chatMsgAdapter = new ChatMsgAdapter(this, R.layout.chat_msg_row,chatMsgArray);
+        chatMsgArrayList.add(chatMessage);
+        //ChatMessage chatMsgArray[] = (ChatMessage[]) chatMsgArrayList.toArray();
+        chatMsgAdapter = new ChatMsgAdapter(this, R.layout.chat_msg_row,chatMsgArrayList.toArray(new ChatMessage[chatMsgArrayList.size()]));
         chatMsgs.setAdapter(chatMsgAdapter);
     }
 
