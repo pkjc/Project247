@@ -46,6 +46,7 @@ public class ChatMsgAdapter extends ArrayAdapter<ChatMessage> {
         }
 
         ChatMessage chatMsg = chatMsgdata[position];
+
         holder.msgText.setText(chatMsg.getMessageText());
         holder.msgTime.setText(DateFormat.format("dd-mm-yyyy (HH:mm:ss)",chatMsg.getMessageTime()));
         holder.msgSender.setText(chatMsg.getMessageSender());

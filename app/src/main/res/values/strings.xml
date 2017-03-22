@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Chat</string>
+    <string name="app_name">WiFiChat</string>
     <string name="discovered_peers_act_title">Nearby Peers</string>
     <string name="prev_conversations_act_title">All Chats</string>
     <string name="main_act_title">WiFiChat</string>

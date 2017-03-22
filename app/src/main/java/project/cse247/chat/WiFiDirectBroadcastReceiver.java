@@ -6,10 +6,6 @@ import android.content.Intent;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pDeviceList;
 import android.net.wifi.p2p.WifiP2pManager;
-import android.widget.ArrayAdapter;
-import android.widget.ListAdapter;
-import android.widget.ListView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -59,6 +55,12 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
             // Respond to new connection or disconnections
         } else if (WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION.equals(action)) {
             // Respond to this device's wifi state changing
+            WifiP2pDevice device = intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_DEVICE);
+            String thisDeviceName = "";
+            if(!device.equals(null)){
+                thisDeviceName = device.deviceName;
+            }
+            discoveredPeersListActivity.setThisDeviceName(thisDeviceName);
         }
     }
 

@@ -23,6 +23,8 @@ public class SingleConversationActivity extends AppCompatActivity {
 
     ListAdapter chatMsgAdapter;
     List<ChatMessage> chatMsgArrayList = new ArrayList<>();
+    String thisDeviceName = "";
+    String msgReceiver = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,22 +36,26 @@ public class SingleConversationActivity extends AppCompatActivity {
             setTitle(getIntent().getStringExtra("selectedPeer"));
         }
         setContentView(R.layout.activity_single_conversation);
-
-        Button sendMsgBtn = (Button) findViewById(R.id.sendMsgBtn);
+        thisDeviceName = getIntent().getStringExtra("thisDeviceName");
+        msgReceiver = getIntent().getStringExtra("msgReceiver");
     }
 
     void displayChatMsgs(ChatMessage chatMessage){
         ListView chatMsgs = (ListView) findViewById(R.id.msgList);
         chatMsgArrayList.add(chatMessage);
-        //ChatMessage chatMsgArray[] = (ChatMessage[]) chatMsgArrayList.toArray();
-        chatMsgAdapter = new ChatMsgAdapter(this, R.layout.chat_msg_row,chatMsgArrayList.toArray(new ChatMessage[chatMsgArrayList.size()]));
+
+        chatMsgAdapter = new ChatMsgAdapter(this, R.layout.chat_msg_row,
+                chatMsgArrayList.toArray(new ChatMessage[chatMsgArrayList.size()]));
         chatMsgs.setAdapter(chatMsgAdapter);
     }
 
     public void onSendMsgBtnClick(View view) {
         EditText msgEditTextView = (EditText) findViewById(R.id.msgEditText);
-        ChatMessage chatMessage = new ChatMessage(msgEditTextView.getText().toString(), "Sender", "Receiver");
-        msgEditTextView.setText("");
-        displayChatMsgs(chatMessage);
+        if(!msgEditTextView.getText().toString().isEmpty()){
+            ChatMessage chatMessage = new ChatMessage(msgEditTextView.getText().toString(), thisDeviceName, msgReceiver);
+            msgEditTextView.setText("");
+            displayChatMsgs(chatMessage);
+        }else
+            return;
     }
 }
