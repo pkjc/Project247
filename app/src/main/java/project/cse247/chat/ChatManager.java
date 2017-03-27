@@ -13,6 +13,8 @@ public class ChatManager {
     private static ChatServer chatServer;
     private static ChatClient chatClient;
 
+    //private ChatView of some kind??
+
     /**
      * Starts a chat server in a new thread. Destroys any chatServer that already exists
      */
@@ -106,6 +108,6 @@ public class ChatManager {
     //TODO: send message to appropriate place - maybe we need to reference a chat view in this class?
     //TODO: Should probably be parsed into a ChatMessage object
     public static void handleServerInput(String input) {
-
+        //ChatView.render(input) ??
     }
 }
