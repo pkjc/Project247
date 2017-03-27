@@ -58,13 +58,14 @@ public class ChatClientReceiver implements Runnable {
             while (!socket.isClosed()) {
                 String input = inStream.readLine();
 
-                //TODO: handle input from the server here!!!
-
                 //the server has alerted us that it is going down!
                 if (input.equals(":disconnect")) {
                     chatClient.close();
                     break;
                 }
+
+                //TODO: This method needs to be implemented!
+                ChatManager.handleServerInput(input);
             }
         } catch (IOException e) {
             Log.d("Chat Client Receiver", e.toString());

@@ -35,6 +35,7 @@ public class ChatServer implements Runnable {
                 Socket clientSocket = welcomeSocket.accept();
                 Log.d("Server", "Client has been accepted");
                 spawnClient(clientSocket);
+                Log.d("Server", "Managing " + chatThreads.size() + " chat threads");
             }
         } catch (IOException e) {
             Log.d("Server", e.toString());

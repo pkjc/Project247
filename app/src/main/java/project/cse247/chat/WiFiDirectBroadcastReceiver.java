@@ -3,9 +3,13 @@ package project.cse247.chat;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Network;
+import android.net.NetworkInfo;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pDeviceList;
+import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -53,11 +57,20 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
 
         } else if (WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION.equals(action)) {
             // Respond to new connection or disconnections
+            NetworkInfo networkInfo = (NetworkInfo) intent.getParcelableExtra(WifiP2pManager.EXTRA_NETWORK_INFO);
+
+            if (networkInfo.isConnected()) {
+                mManager.requestConnectionInfo(mChannel, connectionInfoListener);
+            } else {
+                ChatManager.destroyChatClient();
+                ChatManager.destroyChatServer();
+            }
+
         } else if (WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION.equals(action)) {
             // Respond to this device's wifi state changing
             WifiP2pDevice device = intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_DEVICE);
             String thisDeviceName = "";
-            if(!device.equals(null)){
+            if (!device.equals(null)) {
                 thisDeviceName = device.deviceName;
             }
             discoveredPeersListActivity.setThisDeviceName(thisDeviceName);
@@ -79,6 +92,32 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
 
             discoveredPeersListActivity.populateDiscoveredPeersList(discoveredPeersList);
 
+        }
+    };
+
+    /**
+     * When a connection has been established, initiate chat services
+     */
+    WifiP2pManager.ConnectionInfoListener connectionInfoListener = new WifiP2pManager.ConnectionInfoListener() {
+        @Override
+        public void onConnectionInfoAvailable(WifiP2pInfo info) {
+
+            if (info.groupFormed) {
+
+                if (info.isGroupOwner) {
+                    ChatManager.spawnChatServer();
+                    ChatManager.spawnChatClient("127.0.0.1", 8888);
+                } else {
+                    try {
+                        ChatManager.spawnChatClient(info.groupOwnerAddress.getHostAddress(), 8888);
+                    } catch (Exception e) {
+                        Log.d("Connection Listener", "Exception creating chat client! Does network owner have the app?");
+                    }
+                }
+
+            } else {
+                Log.d("Connection Listener", "Something weird happened! No group formed!");
+            }
         }
     };
 }
