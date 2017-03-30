@@ -72,7 +72,7 @@ public class ChatServer implements Runnable {
             welcomeSocket.close();
 
             for (ChatThread c : chatThreads) {
-                c.sendMessage(":disconnect"); //notify clients that the is disconnecting
+                c.sendMessage(":disconnect"); //notify clients that the server is disconnecting
                 c.close();
             }
 

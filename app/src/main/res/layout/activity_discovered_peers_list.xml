@@ -10,9 +10,16 @@
 
     <ListView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="458dp"
         android:id="@+id/discovered_peers_list"
         >
     </ListView>
+
+    <Button
+        android:id="@+id/createChatRoomBtn"
+        android:layout_width="match_parent"
+        android:layout_height="51dp"
+        android:onClick="onCreateChatRoomBtnClick"
+        android:text="Create Chat Room" />
 
 </LinearLayout>

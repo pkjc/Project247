@@ -28,13 +28,6 @@
         android:layout_marginBottom="5dp"
         android:onClick="startPeerDiscoveryActivity"
         />
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/see_prev_conversations"
-        android:text="@string/see_previous_chats"
-        android:onClick="startPreviousChatsActivity"
-        />
 
 
 </LinearLayout>

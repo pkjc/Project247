@@ -33,14 +33,6 @@ public class DiscoveredPeersListActivity extends AppCompatActivity {
     IntentFilter mIntentFilter;
     String thisDeviceName;
 
-    public String getThisDeviceName() {
-        return thisDeviceName;
-    }
-
-    public void setThisDeviceName(String thisDeviceName) {
-        this.thisDeviceName = thisDeviceName;
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,7 +58,7 @@ public class DiscoveredPeersListActivity extends AppCompatActivity {
             @Override
             public void onSuccess() {
                 //Toast.makeText(DiscoveredPeersListActivity.this, "Peer Discovery Successful!", Toast.LENGTH_SHORT).show();
-                Snackbar.make(findViewById(R.id.discoveredPeersActivity), "Discovering Peers...", Snackbar.LENGTH_LONG).show();
+                Snackbar.make(findViewById(R.id.discoveredPeersActivity), "Peers Discovered. Fetching...", Snackbar.LENGTH_LONG).show();
             }
             @Override
             public void onFailure(int reasonCode) {
@@ -89,7 +81,14 @@ public class DiscoveredPeersListActivity extends AppCompatActivity {
         ListView discoveredPeersListView = (ListView) findViewById(R.id.discovered_peers_list);
         discoveredPeersListView.setAdapter(discoveredPeersListAdapter);
 
-        onPeerSelected(discoveredPeersListView, discoveredPeersList);
+        //onPeerSelected(discoveredPeersListView, discoveredPeersList);
+    }
+
+    public void onCreateChatRoomBtnClick(View view) {
+        Intent intent = new Intent(this, SingleConversationActivity.class);
+        intent.putExtra("thisDeviceName", getThisDeviceName());
+        intent.putExtra("from", "discoveredPeers");
+        startActivity(intent);
     }
 
     void onPeerSelected(ListView discoveredPeersListView, final List<WifiP2pDevice> discoveredPeersList){
@@ -103,8 +102,7 @@ public class DiscoveredPeersListActivity extends AppCompatActivity {
                         peerDeviceAddress = peerDevice.deviceAddress;
                     }
                 }
-                //obtain a peer from the WifiP2pDeviceList
-                //WifiP2pDevice device = null;
+
                 final WifiP2pConfig config = new WifiP2pConfig();
                 config.deviceAddress = peerDeviceAddress;
 
@@ -135,10 +133,20 @@ public class DiscoveredPeersListActivity extends AppCompatActivity {
         super.onResume();
         registerReceiver(mReceiver, mIntentFilter);
     }
+
     /* unregister the broadcast receiver */
     @Override
     protected void onPause() {
         super.onPause();
         unregisterReceiver(mReceiver);
     }
+
+    public String getThisDeviceName() {
+        return thisDeviceName;
+    }
+
+    public void setThisDeviceName(String thisDeviceName) {
+        this.thisDeviceName = thisDeviceName;
+    }
+
 }

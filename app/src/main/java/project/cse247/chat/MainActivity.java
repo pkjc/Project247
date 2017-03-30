@@ -20,8 +20,8 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void startPreviousChatsActivity(View view) {
-        Intent intent = new Intent(this, PreviousConversationsActivity.class);
-        startActivity(intent);
-    }
+//    public void startPreviousChatsActivity(View view) {
+//        Intent intent = new Intent(this, PreviousConversationsActivity.class);
+//        startActivity(intent);
+//    }
 }
