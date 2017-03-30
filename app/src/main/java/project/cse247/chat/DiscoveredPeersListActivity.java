@@ -32,6 +32,7 @@ public class DiscoveredPeersListActivity extends AppCompatActivity {
     BroadcastReceiver mReceiver;
     IntentFilter mIntentFilter;
     String thisDeviceName;
+    List<WifiP2pDevice> discoveredPeersList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +71,7 @@ public class DiscoveredPeersListActivity extends AppCompatActivity {
 
     void populateDiscoveredPeersList(List<WifiP2pDevice> discoveredPeersList){
         List<String> peerDeviceNameList = new ArrayList<>();
+        this.discoveredPeersList.addAll(discoveredPeersList);
 
         for(WifiP2pDevice peerDevice:discoveredPeersList){
             peerDeviceNameList.add(peerDevice.deviceName);
@@ -85,8 +87,27 @@ public class DiscoveredPeersListActivity extends AppCompatActivity {
     }
 
     public void onCreateChatRoomBtnClick(View view) {
+        String peerDeviceAddress = "";
 
-        //Trigger logic to connect to peers, form group and spawn clients and servers
+        for(WifiP2pDevice peerDevice:discoveredPeersList){
+            
+        }
+
+        WifiP2pConfig config = new WifiP2pConfig();
+        config.deviceAddress = peerDeviceAddress;
+
+        mManager.connect(mChannel, config, new WifiP2pManager.ActionListener() {
+
+            @Override
+            public void onSuccess() {
+                //success logic
+            }
+
+            @Override
+            public void onFailure(int reason) {
+                //failure logic
+            }
+        });
 
         Intent intent = new Intent(this, SingleConversationActivity.class);
         intent.putExtra("thisDeviceName", getThisDeviceName());
