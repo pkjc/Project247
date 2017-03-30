@@ -85,6 +85,9 @@ public class DiscoveredPeersListActivity extends AppCompatActivity {
     }
 
     public void onCreateChatRoomBtnClick(View view) {
+
+        //Trigger logic to connect to peers, form group and spawn clients and servers
+
         Intent intent = new Intent(this, SingleConversationActivity.class);
         intent.putExtra("thisDeviceName", getThisDeviceName());
         intent.putExtra("from", "discoveredPeers");

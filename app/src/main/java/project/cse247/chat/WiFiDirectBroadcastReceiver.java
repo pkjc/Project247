@@ -11,6 +11,7 @@ import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.util.Log;
 
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -101,6 +102,9 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
     WifiP2pManager.ConnectionInfoListener connectionInfoListener = new WifiP2pManager.ConnectionInfoListener() {
         @Override
         public void onConnectionInfoAvailable(WifiP2pInfo info) {
+
+            // InetAddress from WifiP2pInfo struct.
+            //InetAddress groupOwnerAddress = info.groupOwnerAddress.getHostAddress());
 
             if (info.groupFormed) {
 
