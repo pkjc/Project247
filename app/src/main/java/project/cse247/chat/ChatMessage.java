@@ -52,4 +52,10 @@ public class ChatMessage {
     public void setMessageTime(Long messageTime) {
         this.messageTime = messageTime;
     }
+
+    @Override
+    public String toString() {
+        String s = messageSender + "::-::" + messageText+"\n";
+        return s;
+    }
 }

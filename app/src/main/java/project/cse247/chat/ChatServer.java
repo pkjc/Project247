@@ -49,9 +49,7 @@ public class ChatServer implements Runnable {
      * @param client the corresponding client
      */
     public synchronized void handleClientInput(String input, ChatThread client) {
-        if (input == null) {
-            Log.d("Server", "Null input received from client!");
-        } else if (input.equals(":quit")) {
+        if (input == null || input.equals(":quit")) {
             dropClient(client);
         } else {
             for (ChatThread c : chatThreads) {
@@ -94,6 +92,14 @@ public class ChatServer implements Runnable {
         ChatThread client = new ChatThread(clientSocket, this);
         chatThreads.add(client);
         new Thread(client).start();
+
+        try {
+            Thread.sleep(300);
+            client.sendMessage("GROUP CHAT::-::Welcome to the chat group!\n");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         Log.d("Server", "New client thread has been spawned!");
     }
 

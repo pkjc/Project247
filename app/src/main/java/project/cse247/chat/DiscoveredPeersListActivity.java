@@ -1,37 +1,37 @@
 package project.cse247.chat;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
-import android.net.wifi.p2p.WifiP2pDeviceList;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 public class DiscoveredPeersListActivity extends AppCompatActivity {
 
-    private static final String TAG = "Disc Peer" ;
-    WifiP2pManager mManager;
-    WifiP2pManager.Channel mChannel;
-    BroadcastReceiver mReceiver;
-    IntentFilter mIntentFilter;
+    private static final String TAG = "Disc Peer";
+
+    private WifiP2pManager manager;
+    private WifiP2pManager.Channel channel;
+
+    BroadcastReceiver broadcastReceiver;
+    IntentFilter intentFilter;
+
     String thisDeviceName;
+
+
     List<WifiP2pDevice> discoveredPeersList;
 
     @Override
@@ -40,29 +40,39 @@ public class DiscoveredPeersListActivity extends AppCompatActivity {
         setTitle(R.string.discovered_peers_act_title);
         setContentView(R.layout.activity_discovered_peers_list);
 
+        //Define manager and channel objects
+        //These are created at application startup
+        ChatApp chatApp = (ChatApp) this.getApplication();
+        manager = chatApp.manager;
+        channel = chatApp.channel;
+
+        //initialize list to store discovered peers
         discoveredPeersList = new ArrayList<WifiP2pDevice>();
 
-        mManager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
-        mChannel = mManager.initialize(this, getMainLooper(), null);
-        mReceiver = new WiFiDirectBroadcastReceiver(mManager, mChannel, this);
+        //Instantiate the broadcast receiver and its associated intent filter
+        //handles peer detection and connections, among other things
+        broadcastReceiver = new WiFiDirectBroadcastReceiver(manager, channel, this);
 
-        mIntentFilter = new IntentFilter();
-        mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
-        mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
-        mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
-        mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
+        intentFilter = new IntentFilter();
+        intentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
+        intentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
+        intentFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
+        intentFilter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
 
         onPeerDiscovery();
     }
 
-    void onPeerDiscovery(){
+    void onPeerDiscovery() {
 
-        mManager.discoverPeers(mChannel, new WifiP2pManager.ActionListener() {
+        Log.d("Discovered Peers", "Calling onPeerDiscovery...");
+
+        manager.discoverPeers(channel, new WifiP2pManager.ActionListener() {
             @Override
             public void onSuccess() {
                 //Toast.makeText(DiscoveredPeersListActivity.this, "Peer Discovery Successful!", Toast.LENGTH_SHORT).show();
                 Snackbar.make(findViewById(R.id.discoveredPeersActivity), "Peers Discovered. Fetching...", Snackbar.LENGTH_LONG).show();
             }
+
             @Override
             public void onFailure(int reasonCode) {
                 Toast.makeText(DiscoveredPeersListActivity.this, "Peer Discovery Failed! Reason Code: " + reasonCode, Toast.LENGTH_SHORT).show();
@@ -71,16 +81,16 @@ public class DiscoveredPeersListActivity extends AppCompatActivity {
 
     }
 
-    void populateDiscoveredPeersList(List<WifiP2pDevice> discoveredPeersList){
+    void populateDiscoveredPeersList(List<WifiP2pDevice> discoveredPeersList) {
         List<String> peerDeviceNameList = new ArrayList<>();
         this.discoveredPeersList.addAll(discoveredPeersList);
 
-        for(WifiP2pDevice peerDevice:discoveredPeersList){
+        for (WifiP2pDevice peerDevice : discoveredPeersList) {
             peerDeviceNameList.add(peerDevice.deviceName);
         }
 
         ListAdapter discoveredPeersListAdapter =
-                new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,peerDeviceNameList);
+                new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, peerDeviceNameList);
 
         ListView discoveredPeersListView = (ListView) findViewById(R.id.discovered_peers_list);
         discoveredPeersListView.setAdapter(discoveredPeersListAdapter);
@@ -89,27 +99,31 @@ public class DiscoveredPeersListActivity extends AppCompatActivity {
     }
 
     public void onCreateChatRoomBtnClick(View view) {
-        String peerDeviceAddress = "";
 
-        for(WifiP2pDevice peerDevice:discoveredPeersList){
-            
+        if (!ChatManager.inSession) {
+
+            Log.d("Discovered Peers", "Attempting to connect to discovered peer...");
+
+            for (WifiP2pDevice peerDevice : discoveredPeersList) {
+                WifiP2pConfig config = new WifiP2pConfig();
+                config.deviceAddress = peerDevice.deviceAddress;
+
+                manager.connect(channel, config, new WifiP2pManager.ActionListener() {
+
+                    @Override
+                    public void onSuccess() {
+                        //success logic
+                    }
+
+                    @Override
+                    public void onFailure(int reason) {
+                        //failure logic
+                    }
+                });
+            }
+        } else {
+            Log.d("Discovered Peers", "Already in chat session, skip connection phase");
         }
-
-        WifiP2pConfig config = new WifiP2pConfig();
-        config.deviceAddress = peerDeviceAddress;
-
-        mManager.connect(mChannel, config, new WifiP2pManager.ActionListener() {
-
-            @Override
-            public void onSuccess() {
-                //success logic
-            }
-
-            @Override
-            public void onFailure(int reason) {
-                //failure logic
-            }
-        });
 
         Intent intent = new Intent(this, SingleConversationActivity.class);
         intent.putExtra("thisDeviceName", getThisDeviceName());
@@ -117,6 +131,7 @@ public class DiscoveredPeersListActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    /*
     void onPeerSelected(ListView discoveredPeersListView, final List<WifiP2pDevice> discoveredPeersList){
         discoveredPeersListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -132,7 +147,7 @@ public class DiscoveredPeersListActivity extends AppCompatActivity {
                 final WifiP2pConfig config = new WifiP2pConfig();
                 config.deviceAddress = peerDeviceAddress;
 
-                mManager.connect(mChannel, config, new WifiP2pManager.ActionListener() {
+                manager.connect(channel, config, new WifiP2pManager.ActionListener() {
 
                     @Override
                     public void onSuccess() {
@@ -152,19 +167,20 @@ public class DiscoveredPeersListActivity extends AppCompatActivity {
             }
         });
     }
+    */
 
     /* register the broadcast receiver with the intent values to be matched */
     @Override
     protected void onResume() {
         super.onResume();
-        registerReceiver(mReceiver, mIntentFilter);
+        registerReceiver(broadcastReceiver, intentFilter);
     }
 
     /* unregister the broadcast receiver */
     @Override
     protected void onPause() {
         super.onPause();
-        unregisterReceiver(mReceiver);
+        unregisterReceiver(broadcastReceiver);
     }
 
     public String getThisDeviceName() {

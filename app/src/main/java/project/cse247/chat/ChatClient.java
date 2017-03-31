@@ -3,8 +3,11 @@ package project.cse247.chat;
 import android.util.Log;
 
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 /**
  * One of two parts of the client version. The ChatClient object should be created for any device
@@ -19,6 +22,8 @@ public class ChatClient {
     private Socket socket;
     private ChatClientReceiver receiver;
 
+    private ChatManager chatManager;
+
     private PrintWriter outStream;
 
     /**
@@ -30,6 +35,7 @@ public class ChatClient {
      */
     public ChatClient(String address, int port) throws IOException {
         socket = new Socket(address, port);
+        socket.setKeepAlive(true);
         receiver = new ChatClientReceiver(socket, this);
         outStream = new PrintWriter(socket.getOutputStream());
     }
@@ -41,6 +47,7 @@ public class ChatClient {
      * @param message the desired message to broadcast
      */
     public void sendMessage(String message) {
+        Log.d("Chat Client", "Attempting to send: " + message);
         outStream.print(message);
         outStream.flush();
     }
@@ -63,5 +70,10 @@ public class ChatClient {
      */
     public void spawnChatClientReceiver() {
         new Thread(receiver).start();
+    }
+
+    public void setChatManager(ChatManager chatManager) {
+        this.chatManager = chatManager;
+        receiver.setChatManager(chatManager);
     }
 }

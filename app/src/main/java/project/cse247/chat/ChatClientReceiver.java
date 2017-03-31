@@ -17,6 +17,9 @@ public class ChatClientReceiver implements Runnable {
     private Socket socket;
     private ChatClient chatClient;
 
+
+    private ChatManager chatManager;
+
     private BufferedReader inStream;
 
     /**
@@ -35,6 +38,8 @@ public class ChatClientReceiver implements Runnable {
         } catch (IOException e) {
             Log.d("Chat Client Receiver", e.toString());
         }
+
+        Log.d("Chat Client Receiver", "Chat Client Receiver instantiated!");
     }
 
     /**
@@ -54,9 +59,13 @@ public class ChatClientReceiver implements Runnable {
     @Override
     public void run() {
 
+        Log.d("Chat Client Receiver", "Receiver listening...");
+
         try {
             while (!socket.isClosed()) {
                 String input = inStream.readLine();
+
+                Log.d("Chat Client Receiver", "Received message: " + input);
 
                 //the server has alerted us that it is going down!
                 if (input.equals(":disconnect")) {
@@ -64,12 +73,16 @@ public class ChatClientReceiver implements Runnable {
                     break;
                 }
 
-                //TODO: This method needs to be implemented!
-                ChatManager.handleServerInput(input);
+
+                chatManager.handleServerInput(input);
             }
         } catch (IOException e) {
             Log.d("Chat Client Receiver", e.toString());
         }
 
+    }
+
+    public void setChatManager(ChatManager chatManager){
+        this.chatManager = chatManager;
     }
 }

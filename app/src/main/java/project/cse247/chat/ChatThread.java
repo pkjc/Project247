@@ -28,6 +28,7 @@ public class ChatThread implements Runnable {
         try {
             inStream = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             outStream = new PrintWriter(socket.getOutputStream());
+            Log.d("Chat Thread", "New thread instantiated!");
         } catch (IOException e) {
             Log.d("Chat Thread", e.toString());
         }
@@ -39,9 +40,14 @@ public class ChatThread implements Runnable {
     @Override
     public void run() {
 
+        Log.d("Chat Thread", "Thread listening...");
+
         try {
             while (!socket.isClosed()) {
                 String input = inStream.readLine();
+
+                Log.d("Chat Thread", "Received: " + input);
+
                 chatServer.handleClientInput(input, this);
             }
         } catch (IOException e) {
@@ -70,6 +76,9 @@ public class ChatThread implements Runnable {
      * @param s the desired message
      */
     public void sendMessage(String s) {
+
+        Log.d("Chat Thread", "Sending to client: " + s);
+
         outStream.print(s);
         outStream.flush();
     }

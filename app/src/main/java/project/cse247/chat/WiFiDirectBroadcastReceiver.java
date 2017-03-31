@@ -24,6 +24,7 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
 
     private WifiP2pManager mManager;
     private WifiP2pManager.Channel mChannel;
+
     private DiscoveredPeersListActivity discoveredPeersListActivity;
 
     public WiFiDirectBroadcastReceiver(WifiP2pManager manager, WifiP2pManager.Channel channel,
@@ -37,6 +38,8 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
+
+        Log.d("Broadcast Receiver", "Action: " + action);
 
         if (WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION.equals(action)) {
             // Check to see if Wi-Fi is enabled and notify appropriate activity
@@ -61,17 +64,20 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
             NetworkInfo networkInfo = (NetworkInfo) intent.getParcelableExtra(WifiP2pManager.EXTRA_NETWORK_INFO);
 
             if (networkInfo.isConnected()) {
-                mManager.requestConnectionInfo(mChannel, connectionInfoListener);
+               /* mManager.requestConnectionInfo(mChannel, connectionInfoListener); */
             } else {
+                /*
                 ChatManager.destroyChatClient();
                 ChatManager.destroyChatServer();
+                ChatManager.inSession = false;
+                */
             }
 
         } else if (WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION.equals(action)) {
             // Respond to this device's wifi state changing
             WifiP2pDevice device = intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_DEVICE);
             String thisDeviceName = "";
-            if (!(device == null)) {
+            if (!device.equals(null)) {
                 thisDeviceName = device.deviceName;
             }
             discoveredPeersListActivity.setThisDeviceName(thisDeviceName);
@@ -93,35 +99,6 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
 
             discoveredPeersListActivity.populateDiscoveredPeersList(discoveredPeersList);
 
-        }
-    };
-
-    /**
-     * When a connection has been established, initiate chat services
-     */
-    WifiP2pManager.ConnectionInfoListener connectionInfoListener = new WifiP2pManager.ConnectionInfoListener() {
-        @Override
-        public void onConnectionInfoAvailable(WifiP2pInfo info) {
-
-            // InetAddress from WifiP2pInfo struct.
-            //InetAddress groupOwnerAddress = info.groupOwnerAddress.getHostAddress());
-
-            if (info.groupFormed) {
-
-                if (info.isGroupOwner) {
-                    ChatManager.spawnChatServer();
-                    ChatManager.spawnChatClient("127.0.0.1", 8888);
-                } else {
-                    try {
-                        ChatManager.spawnChatClient(info.groupOwnerAddress.getHostAddress(), 8888);
-                    } catch (Exception e) {
-                        Log.d("Connection Listener", "Exception creating chat client! Does network owner have the app?");
-                    }
-                }
-
-            } else {
-                Log.d("Connection Listener", "Something weird happened! No group formed!");
-            }
         }
     };
 }

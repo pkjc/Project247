@@ -1,20 +1,12 @@
 package project.cse247.chat;
 
-import android.content.Context;
-import android.database.DataSetObserver;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.LayoutInflater;
+import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,21 +18,27 @@ public class SingleConversationActivity extends AppCompatActivity {
     String thisDeviceName = "";
     String msgReceiver = "";
 
+    private ChatApp chatApp;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if(getIntent().getStringExtra("from").equals("prevChats")){
+        if (getIntent().getStringExtra("from").equals("prevChats")) {
             setTitle(getIntent().getStringExtra("selectedChat"));
-        }else if(getIntent().getStringExtra("from").equals("discoveredPeers")){
+        } else if (getIntent().getStringExtra("from").equals("discoveredPeers")) {
             setTitle(getIntent().getStringExtra("selectedPeer"));
         }
         setContentView(R.layout.activity_single_conversation);
         thisDeviceName = getIntent().getStringExtra("thisDeviceName");
         msgReceiver = getIntent().getStringExtra("msgReceiver");
+
+        chatApp = (ChatApp) this.getApplication();
+        chatApp.chatManager.singleConversationActivity = this;
+        chatApp.chatManager.updateConversationActivity(); //write any messages currently saved by the ChatManager
     }
 
-    void displayChatMsgs(ChatMessage chatMessage){
+    void displayChatMsgs(ChatMessage chatMessage) {
         ListView chatMsgs = (ListView) findViewById(R.id.msgList);
         chatMsgArrayList.add(chatMessage);
 
@@ -51,11 +49,16 @@ public class SingleConversationActivity extends AppCompatActivity {
 
     public void onSendMsgBtnClick(View view) {
         EditText msgEditTextView = (EditText) findViewById(R.id.msgEditText);
-        if(!msgEditTextView.getText().toString().isEmpty()){
+        if (!msgEditTextView.getText().toString().isEmpty()) {
             ChatMessage chatMessage = new ChatMessage(msgEditTextView.getText().toString(), thisDeviceName, msgReceiver);
+            Log.d("Single Conversation", "Message Created: " + chatMessage.toString());
+
+            //Ask the chatManager to try sending this message to the server
+            chatApp.chatManager.sendMessage(chatMessage);
+
             msgEditTextView.setText("");
             displayChatMsgs(chatMessage);
-        }else
+        } else
             return;
     }
 }

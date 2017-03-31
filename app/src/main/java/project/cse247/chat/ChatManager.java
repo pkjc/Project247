@@ -3,6 +3,8 @@ package project.cse247.chat;
 import android.util.Log;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Scanner;
 
 /**
  * Created by Noah on 3/27/2017.
@@ -10,15 +12,27 @@ import java.io.IOException;
 
 public class ChatManager {
 
-    private static ChatServer chatServer;
-    private static ChatClient chatClient;
+    private ChatServer chatServer;
+    private ChatClient chatClient;
 
-    //private ChatView of some kind??
+    private ArrayList<ChatMessage> bufferedMessages;
+
+    /**
+     * Track if we are in a chat session
+     */
+    public static boolean inSession = false;
+
+    public SingleConversationActivity singleConversationActivity;
+
+
+    public ChatManager() {
+        bufferedMessages = new ArrayList<ChatMessage>();
+    }
 
     /**
      * Starts a chat server in a new thread. Destroys any chatServer that already exists
      */
-    public static void spawnChatServer() {
+    public void spawnChatServer() {
         new Thread(new Runnable() { //Network actions cannot be run on the main thread
             @Override
             public void run() {
@@ -42,7 +56,10 @@ public class ChatManager {
      * @param address the device address to connect to
      * @param port    the port number to connect on
      */
-    public static void spawnChatClient(final String address, final int port) {
+    public void spawnChatClient(final String address, final int port) {
+
+        final ChatManager ref = this;
+
         new Thread(new Runnable() { //network actions cannot be run on the main thread
             @Override
             public void run() {
@@ -52,6 +69,7 @@ public class ChatManager {
                 try {
                     chatClient = new ChatClient(address, port);
                     chatClient.spawnChatClientReceiver();
+                    chatClient.setChatManager(ref);
                     Log.d("Chat Manager", "Chat client instantiated!");
                 } catch (IOException e) {
                     Log.d("Chat Manager", e.getMessage());
@@ -64,7 +82,7 @@ public class ChatManager {
     /**
      * Close and null out the chatServer if it is not null already
      */
-    public static void destroyChatServer() {
+    public void destroyChatServer() {
         if (chatServer != null) {
             chatServer.close();
             chatServer = null;
@@ -74,7 +92,7 @@ public class ChatManager {
     /**
      * Close and null out the ChatClient if it is not null already
      */
-    public static void destroyChatClient() {
+    public void destroyChatClient() {
         if (chatClient != null) {
             chatClient.close();
             chatClient = null;
@@ -86,13 +104,13 @@ public class ChatManager {
      *
      * @param message the message to send
      */
-    public static void sendMessage(final ChatMessage message) {
+    public void sendMessage(final ChatMessage message) {
+        Log.d("Chat Manager", "Attempting to send: " + message);
         new Thread(new Runnable() {  //network actions cannot be run on the main thread
             @Override
             public void run() {
                 if (chatClient != null) {
-                    //TODO: This takes a string - format this as desired
-                    chatClient.sendMessage(message.getMessageText());
+                    chatClient.sendMessage(message.toString());
                 } else {
                     Log.d("Chat Manager", "Chat Client is not instantiated!");
                 }
@@ -102,12 +120,44 @@ public class ChatManager {
 
     /**
      * Should be called by ChatClientReceiver whenever it gets some input
+     * <p>
+     * Parses the given input into a message, and adds it to the buffer. Then calls the
+     * updateConversationActivity function to write the input to the screen, if the view is
+     * available
      *
      * @param input input received from the ChatServer
      */
-    //TODO: send message to appropriate place - maybe we need to reference a chat view in this class?
-    //TODO: Should probably be parsed into a ChatMessage object
-    public static void handleServerInput(String input) {
-        //ChatView.render(input) ??
+    public void handleServerInput(String input) {
+
+        Log.d("Chat Manager", "Input from server: " + input);
+
+        Scanner scan = new Scanner(input);
+        scan.useDelimiter("::-::");
+        final String sender = scan.next();
+        final String message = scan.next();
+
+        ChatMessage chatMessage = new ChatMessage(message, sender, "");
+
+        bufferedMessages.add(chatMessage);
+
+        updateConversationActivity();
+    }
+
+    /**
+     * Pushes all the messages in the queue to the SingleConversationActivity, as long as it isn't null
+     */
+    public void updateConversationActivity() {
+        if (!(singleConversationActivity == null)) {
+            singleConversationActivity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    for (ChatMessage c : bufferedMessages) {
+                        singleConversationActivity.displayChatMsgs(c);
+                    }
+
+                    bufferedMessages.clear();
+                }
+            });
+        }
     }
 }
