@@ -40,6 +40,8 @@ public class DiscoveredPeersListActivity extends AppCompatActivity {
         setTitle(R.string.discovered_peers_act_title);
         setContentView(R.layout.activity_discovered_peers_list);
 
+        discoveredPeersList = new ArrayList<WifiP2pDevice>();
+
         mManager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
         mChannel = mManager.initialize(this, getMainLooper(), null);
         mReceiver = new WiFiDirectBroadcastReceiver(mManager, mChannel, this);

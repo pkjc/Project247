@@ -71,7 +71,7 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
             // Respond to this device's wifi state changing
             WifiP2pDevice device = intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_DEVICE);
             String thisDeviceName = "";
-            if (!device.equals(null)) {
+            if (!(device == null)) {
                 thisDeviceName = device.deviceName;
             }
             discoveredPeersListActivity.setThisDeviceName(thisDeviceName);
