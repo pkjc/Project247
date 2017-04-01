@@ -2,7 +2,6 @@ package project.cse247.chat;
 
 import android.app.Application;
 import android.net.wifi.p2p.WifiP2pManager;
-import android.util.Log;
 
 /**
  * Contains and initializes application-level resources on startup
@@ -25,6 +24,7 @@ public class ChatApp extends Application {
 
     @Override
     public void onCreate() {
+        super.onCreate();
         manager = (WifiP2pManager) getSystemService(WIFI_P2P_SERVICE);
         channel = manager.initialize(this, getMainLooper(), null);
         chatManager = new ChatManager();
