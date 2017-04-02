@@ -8,8 +8,6 @@ import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.util.Log;
 
-import java.io.IOException;
-
 /**
  * This receiver is responsible for handling changes in the connection.
  * Because it deals with an application-level service, it is defined in xml under the application tag
@@ -19,6 +17,7 @@ import java.io.IOException;
 public class ChatConnectionReceiver extends BroadcastReceiver {
 
     private ChatApp chatApp;
+    private DiscoveredPeersListActivity discoveredPeersListActivity;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -55,6 +54,9 @@ public class ChatConnectionReceiver extends BroadcastReceiver {
                 } else {
                     try {
                         chatApp.chatManager.spawnChatClient(info.groupOwnerAddress.getHostAddress(), 8888);
+                        Log.d("**** Not grp ownr ****", "Device is group owner!");
+                        discoveredPeersListActivity = new DiscoveredPeersListActivity();
+                        discoveredPeersListActivity.startSingleConvAct();
                     } catch (Exception e) {
                         Log.d("Connection Listener", e.getMessage());
                     }

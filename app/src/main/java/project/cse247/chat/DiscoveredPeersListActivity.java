@@ -6,9 +6,9 @@ import android.content.IntentFilter;
 import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pManager;
+import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -60,6 +60,7 @@ public class DiscoveredPeersListActivity extends AppCompatActivity {
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
 
         onPeerDiscovery();
+
     }
 
     void onPeerDiscovery() {
@@ -86,7 +87,9 @@ public class DiscoveredPeersListActivity extends AppCompatActivity {
         this.discoveredPeersList.addAll(discoveredPeersList);
 
         for (WifiP2pDevice peerDevice : discoveredPeersList) {
-            peerDeviceNameList.add(peerDevice.deviceName);
+            if(peerDevice.primaryDeviceType.equals("10-0050F204-5")) {
+                peerDeviceNameList.add(peerDevice.deviceName);
+            }
         }
 
         ListAdapter discoveredPeersListAdapter =
@@ -108,18 +111,20 @@ public class DiscoveredPeersListActivity extends AppCompatActivity {
                 WifiP2pConfig config = new WifiP2pConfig();
                 config.deviceAddress = peerDevice.deviceAddress;
 
+                Log.d("---P TYPE-------" , peerDevice.primaryDeviceType);
+
                 manager.connect(channel, config, new WifiP2pManager.ActionListener() {
 
-                    @Override
-                    public void onSuccess() {
-                        //success logic
-                    }
+                        @Override
+                        public void onSuccess() {
+                            //success logic
+                        }
 
-                    @Override
-                    public void onFailure(int reason) {
-                        //failure logic
-                    }
-                });
+                        @Override
+                        public void onFailure(int reason) {
+                            //failure logic
+                        }
+                    });
             }
         } else {
             Log.d("Discovered Peers", "Already in chat session, skip connection phase");
@@ -131,8 +136,8 @@ public class DiscoveredPeersListActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    /*
-    void onPeerSelected(ListView discoveredPeersListView, final List<WifiP2pDevice> discoveredPeersList){
+
+    /*void onPeerSelected(ListView discoveredPeersListView, final List<WifiP2pDevice> discoveredPeersList){
         discoveredPeersListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(final AdapterView<?> adapterView, View view, final int position, long l) {
@@ -166,8 +171,8 @@ public class DiscoveredPeersListActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-    }
-    */
+    }*/
+
 
     /* register the broadcast receiver with the intent values to be matched */
     @Override
@@ -189,6 +194,14 @@ public class DiscoveredPeersListActivity extends AppCompatActivity {
 
     public void setThisDeviceName(String thisDeviceName) {
         this.thisDeviceName = thisDeviceName;
+    }
+
+    public void startSingleConvAct(){
+        Log.d("**** startSingleConvAct", "OK");
+        Intent intent = new Intent(this, SingleConversationActivity.class);
+        intent.putExtra("thisDeviceName", getThisDeviceName());
+        intent.putExtra("from", "discoveredPeers");
+        startActivity(intent);
     }
 
 }

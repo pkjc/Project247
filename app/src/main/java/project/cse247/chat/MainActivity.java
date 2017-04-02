@@ -1,9 +1,8 @@
 package project.cse247.chat;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 public class MainActivity extends AppCompatActivity {
@@ -16,6 +15,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void startPeerDiscoveryActivity(View view) {
+        //new TxtServerAsyncTask(this).execute();
+
         Intent intent = new Intent(this, DiscoveredPeersListActivity.class);
         startActivity(intent);
     }

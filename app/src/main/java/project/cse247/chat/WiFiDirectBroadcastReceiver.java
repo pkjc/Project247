@@ -3,15 +3,12 @@ package project.cse247.chat;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Network;
 import android.net.NetworkInfo;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pDeviceList;
-import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.util.Log;
 
-import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -64,13 +61,11 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
             NetworkInfo networkInfo = (NetworkInfo) intent.getParcelableExtra(WifiP2pManager.EXTRA_NETWORK_INFO);
 
             if (networkInfo.isConnected()) {
-               /* mManager.requestConnectionInfo(mChannel, connectionInfoListener); */
+                //mManager.requestConnectionInfo(mChannel, connectionInfoListener);
             } else {
-                /*
-                ChatManager.destroyChatClient();
+                /*ChatManager.destroyChatClient();
                 ChatManager.destroyChatServer();
-                ChatManager.inSession = false;
-                */
+                ChatManager.inSession = false;*/
             }
 
         } else if (WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION.equals(action)) {
@@ -94,7 +89,12 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
 
             if (!refreshedPeers.equals(discoveredPeersList)) {
                 discoveredPeersList.clear();
-                discoveredPeersList.addAll(refreshedPeers);
+                //discoveredPeersList.addAll(refreshedPeers);
+                for (WifiP2pDevice pDevice : refreshedPeers){
+                    if(pDevice.primaryDeviceType.equals("10-0050F204-5")) {
+                        discoveredPeersList.add(pDevice);
+                    }
+                }
             }
 
             discoveredPeersListActivity.populateDiscoveredPeersList(discoveredPeersList);
