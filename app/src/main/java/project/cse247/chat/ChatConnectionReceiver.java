@@ -36,14 +36,14 @@ public class ChatConnectionReceiver extends BroadcastReceiver {
         } else {
             chatApp.chatManager.destroyChatClient();
             chatApp.chatManager.destroyChatServer();
-            ChatManager.inSession = false;
+            ChatManager.ChatState.inSession = false;
         }
     }
 
     private WifiP2pManager.ConnectionInfoListener connectionInfoListener = new WifiP2pManager.ConnectionInfoListener() {
         @Override
-        public void onConnectionInfoAvailable(WifiP2pInfo info) {
-            if (info.groupFormed) {
+        public void onConnectionInfoAvailable(final WifiP2pInfo info) {
+            /*if (info.groupFormed) {
                 Log.d("Connection Listener", "Group formed!");
                 if (info.isGroupOwner) {
 
@@ -63,6 +63,86 @@ public class ChatConnectionReceiver extends BroadcastReceiver {
                 }
             } else {
                 Log.d("Connection Listener", "Something weird happened! Couldn't form a group");
+            }*/
+
+            if (info.groupFormed) {
+
+                Log.d("Connection Listener", "Group formed...");
+
+                final String address = info.groupOwnerAddress.getHostAddress();
+                final int port = 8888;
+
+                final boolean inSession = ChatManager.ChatState.inSession;
+                final boolean groupLeader = ChatManager.ChatState.groupLeader;
+
+                if (info.isGroupOwner) {
+
+                    Log.d("Connection Listener", "Device is group owner...");
+                    /*
+                    Handle a brand new connection as group leader!
+                     */
+                    if (!inSession && !groupLeader) {
+                        Log.d("Connection Listener", "Create a new connection! We are Chat Server!");
+                        ChatManager.ChatState.groupLeader = true;
+                        ChatManager.ChatState.inSession = true;
+                        chatApp.chatManager.spawnChatServer();
+                        chatApp.chatManager.spawnChatClient(address, port);
+                    }
+                    /*
+                    Connection changed, but we're still group leader!
+                     */
+                    else if (inSession && groupLeader) {
+                        Log.d("Connection Listener", "Connection changed, still Chat Server. Do Nothing!");
+                    }
+
+                    /*
+                    We were a client, but now we are group leader!
+                     */
+                    else if (inSession && !groupLeader) {
+                        Log.d("Connection Listener", "Connection changed, we are now Group Leader!");
+                        ChatManager.ChatState.groupLeader = true;
+                        chatApp.chatManager.spawnChatServer();
+                        chatApp.chatManager.spawnChatClient(address, port);
+                    }
+                    else {
+                        Log.d("Connection Listener", "Device state was not handled! inSession: " + inSession +
+                                " groupLeader: " + groupLeader);
+                    }
+
+
+                } else {
+                    /*
+                    Handle a brand new connection as a client
+                     */
+                    if (!inSession && !groupLeader) {
+                        Log.d("Connection Listener", "New connection to server!");
+                        ChatManager.ChatState.inSession = true;
+                        chatApp.chatManager.spawnChatClient(address, port);
+                    }
+                    /*
+                    Handle a change in connection as a client
+                     */
+                    else if (inSession && !groupLeader) {
+                        Log.d("Connection Listener", "Connection to server changed!");
+                        chatApp.chatManager.spawnChatClient(address, port);
+                    }
+                    /*
+                    Handle a change in connection, going from group leader to client
+                     */
+                    else if (inSession && groupLeader) {
+                        Log.d("Connection Listener", "No longer server; connection to server changed!");
+                        ChatManager.ChatState.groupLeader = false;
+                        chatApp.chatManager.destroyChatServer();
+                        chatApp.chatManager.spawnChatClient(address, port);
+                    }
+                    else {
+                        Log.d("Connection Listener", "Device state was not handled! inSession: " + inSession +
+                                " groupLeader: " + groupLeader);
+                    }
+
+                }
+            } else {
+                Log.d("Connection Listener", "Something weird happened! Couldn't form a group!");
             }
         }
     };

@@ -103,29 +103,48 @@ public class DiscoveredPeersListActivity extends AppCompatActivity {
 
     public void onCreateChatRoomBtnClick(View view) {
 
-        if (!ChatManager.inSession) {
+        if (!ChatManager.ChatState.inSession) {
 
             Log.d("Discovered Peers", "Attempting to connect to discovered peer...");
 
-            for (WifiP2pDevice peerDevice : discoveredPeersList) {
-                WifiP2pConfig config = new WifiP2pConfig();
-                config.deviceAddress = peerDevice.deviceAddress;
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    for (final WifiP2pDevice peerDevice : discoveredPeersList) {
 
-                Log.d("---P TYPE-------" , peerDevice.primaryDeviceType);
-
-                manager.connect(channel, config, new WifiP2pManager.ActionListener() {
-
-                        @Override
-                        public void onSuccess() {
-                            //success logic
+                        if (ChatManager.ChatState.inSession && !ChatManager.ChatState.groupLeader) {
+                            Log.d("Discovered Peers", "Someone else is group leader!");
+                            break;
                         }
 
-                        @Override
-                        public void onFailure(int reason) {
-                            //failure logic
+                        WifiP2pConfig config = new WifiP2pConfig();
+                        config.deviceAddress = peerDevice.deviceAddress;
+
+                        Log.d("---P TYPE-------" , peerDevice.primaryDeviceType);
+
+                        manager.connect(channel, config, new WifiP2pManager.ActionListener() {
+
+                            @Override
+                            public void onSuccess() {
+                                //success logic
+                                Log.d("Discovered Peers", "Enter connect...");
+                            }
+
+                            @Override
+                            public void onFailure(int reason) {
+                                //failure logic
+                                Log.d("Discovered Peers", "Connect failed!");
+                            }
+                        });
+
+                        try {
+                            Thread.sleep(5000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
                         }
-                    });
-            }
+                    }
+                }
+            }).start();
         } else {
             Log.d("Discovered Peers", "Already in chat session, skip connection phase");
         }

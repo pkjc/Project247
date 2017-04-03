@@ -12,15 +12,45 @@ import java.util.Scanner;
 
 public class ChatManager {
 
+    /**
+     * Host relevant global variables about any current Chat session
+     */
+    public static final class ChatState {
+
+        private ChatState() {
+
+        }
+
+        /**
+         * Track if we are in a chat session
+         */
+        public static boolean inSession = false;
+
+        /**
+         * Track if we are group leader
+         */
+        public static boolean groupLeader = false;
+
+        /**
+         * Track group leader address
+         */
+        public static String groupLeaderAddress = null;
+
+        /**
+         * Reset all state fields to their default values
+         */
+        public static void clearState() {
+            inSession = false;
+            groupLeader = false;
+            groupLeaderAddress = null;
+        }
+
+    }
+
     private ChatServer chatServer;
     private ChatClient chatClient;
 
     private ArrayList<ChatMessage> bufferedMessages;
-
-    /**
-     * Track if we are in a chat session
-     */
-    public static boolean inSession = false;
 
     public SingleConversationActivity singleConversationActivity;
 
@@ -37,7 +67,6 @@ public class ChatManager {
             @Override
             public void run() {
                 destroyChatServer();
-
                 try {
                     chatServer = new ChatServer(); //create a chat server
                     new Thread(chatServer).start(); //fork the chat server's welcome loop into a new thread
